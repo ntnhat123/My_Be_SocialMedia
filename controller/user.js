@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 const test = "test";
-const secretKey = 'your-secret-key'; 
 
 export const searchUser = async (req, res) => {
     const search = req.query.fullName;

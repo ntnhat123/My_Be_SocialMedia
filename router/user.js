@@ -3,7 +3,7 @@ import {searchUser,getUserById,getAllUser,updateUser,follow,unfollow} from '../c
 import { authMiddleWare } from '../middleware/authentication.js';
 const router = express.Router();
 
-router.get('/searchUser',authMiddleWare, searchUser);
+router.post('/searchUser',authMiddleWare, searchUser);
 router.get('/user/:id', authMiddleWare,getUserById);
 router.post('/updateUser/:id', updateUser);
 router.get('/getAllUser', getAllUser);
