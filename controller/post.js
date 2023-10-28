@@ -32,15 +32,15 @@ export const getPost = async (req, res) => {
 }
 
 export const getPostOfUserId = async (req, res) => {
-    try{
-        const { id } = req.params;
-        const post = await Post.findById(id).populate("usercreator").populate("likes");
+    const { id } = req.params;
+    try {
+        const post = await Post.find({ usercreator: id }).populate("usercreator").populate("likes");
         res.status(200).json({
             message: "Get post successfully",
             data: post,
             status :true
         })
-    }catch(error){
+    } catch (error) {
         res.status(409).json({ message: error.message });
     }
 }
@@ -123,7 +123,7 @@ export const getTimeline = async (req, res) => {
 export const getUserlikepost = async (req, res) => {
     const { id } = req.params;
     try{
-        const post = await Post.findById(id);
+        const post = await Post.findById(id).populate("usercreator").populate("likes");
         const userlikepost = await Promise.all(
             post.likes.map((userId) => {
                 return Post.find({ usercreator: userId });
@@ -138,3 +138,35 @@ export const getUserlikepost = async (req, res) => {
         res.status(409).json({ message: error.message });
     }
 }
+
+export const getLikePost = async (req, res) => {
+    try {
+        const posts = await Post.find().populate("usercreator").populate("likes");
+        console.log(posts)
+        if (!posts || !Array.isArray(posts)) {
+            throw new Error("No posts found or posts are not in the expected format");
+        }
+
+        const userlikepost = await Promise.all(
+            posts.map(post => {
+                if (!post.likes || !Array.isArray(post.likes)) {
+                    return []; // Returning an empty array if likes are not present or not in an array format
+                }
+                return Promise.all(
+                    post.likes.map((userId) => {
+                        return Post.find({ usercreator: userId });
+                    })
+                );
+            })
+        );
+
+        res.status(200).json({
+            message: "Get user like post successfully",
+            data: userlikepost,
+            status: true
+        });
+    } catch (error) {
+        res.status(409).json({ message: error.message });
+    }
+};
+
