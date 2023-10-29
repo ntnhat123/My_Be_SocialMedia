@@ -8,6 +8,6 @@ router.post('/createComment',authMiddleWare, createComment);
 router.post('/likeComment',authMiddleWare, likeComment);
 router.delete('/deleteComment/:id',authMiddleWare, deleteComment);
 router.post('/updateComment/:id',authMiddleWare, updateComment);
-router.get('/getAllComment',getAllComment);
+router.get('/getAllComment',authMiddleWare,getAllComment);
 
 export default router;

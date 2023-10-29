@@ -20,7 +20,7 @@ export const createPost = async (req, res) => {
 
 export const getPost = async (req, res) => {
     try {
-        const post = await Post.find().populate("usercreator").populate("likes");
+        const post = await Post.find().populate("usercreator").populate("likes").populate("comments");
         res.status(200).json({
             message: "Get post successfully",
             data: post,
@@ -34,7 +34,7 @@ export const getPost = async (req, res) => {
 export const getPostOfUserId = async (req, res) => {
     const { id } = req.params;
     try {
-        const post = await Post.find({ usercreator: id }).populate("usercreator").populate("likes");
+        const post = await Post.find({ usercreator: id }).populate("usercreator").populate("likes").populate("comments");
         res.status(200).json({
             message: "Get post successfully",
             data: post,
@@ -64,18 +64,26 @@ export const updatePost = async (req, res) => {
 }
 
 export const deletePost = async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.body;
     try{
         if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
-        await Post.findByIdAndRemove(id);
-        res.status(200).json({
-            message: "Delete post successfully",
-            status :true
-        })
-    }catch(error){
-        res.status(409).json({ message: error.message });
+        const post = await Post.findById(id).populate("usercreator");
+        if (post.usercreator._id == req.userId) {
+            await Post.findByIdAndRemove(id);
+            res.status(200).json({
+                message: "Delete post successfully",
+                status :true
+            })
+        } else {
+            res.status(403).json({
+                message: "You can delete only your post",
+                status :false
+            })
+        }
+    } catch(error){
+        res.status(500).json({ message: error.message });
     }
-}
+};
 
 export const likePost = async (req, res) => {
     const { id } = req.body;

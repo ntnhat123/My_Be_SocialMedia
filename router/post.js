@@ -9,7 +9,7 @@ router.post('/createPost',authMiddleWare, createPost);
 router.get('/getPost', getPost);
 router.get('/getPostOfUserId/:id',authMiddleWare ,getPostOfUserId);
 router.post('/updatePost/:id', authMiddleWare, updatePost);
-router.delete('/deletePost/:id', authMiddleWare,deletePost);
+router.post('/deletePost', authMiddleWare,deletePost);
 router.post('/likePost',authMiddleWare, likePost);
 router.get('/getLikePost', authMiddleWare, getLikePost);
 router.get('/getTimeline/:id',getTimeline);
