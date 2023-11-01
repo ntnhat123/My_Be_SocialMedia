@@ -18,6 +18,28 @@ export const createPost = async (req, res) => {
     }
 }
 
+export const updatePost = async (req, res) => {
+    const { id, content, images } = req.body;
+    try{
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
+        const post = await Post.findById(id).populate("usercreator").populate("likes");
+        if (post.usercreator._id == req.userId) {
+            await Post.findByIdAndUpdate(id, { content, images });
+            res.status(200).json({
+                message: "Update post successfully",
+                status :true
+            })
+        } else {
+            res.status(403).json({
+                message: "You can update only your post",
+                status :false
+            })
+        }        
+    }catch(error){
+        res.status(409).json({ message: error.message });
+    }
+}
+
 export const getPost = async (req, res) => {
     try {
         const post = await Post.find().populate("usercreator").populate("likes").populate("comments");
@@ -41,24 +63,6 @@ export const getPostOfUserId = async (req, res) => {
             status :true
         })
     } catch (error) {
-        res.status(409).json({ message: error.message });
-    }
-}
-export const updatePost = async (req, res) => {
-    const { id } = req.params;
-    const { content, images } = req.body;
-    try{
-        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
-        const updatedPost = { content, images, _id: id };
-        await Post.findByIdAndUpdate(id, updatedPost, { new: true });
-        const postUser = await Post.findById(id).populate("usercreator", "username avatar");
-        res.status(200).json({
-            message: "Update post successfully",
-            data: postUser,
-            status :true
-        })
-    }
-    catch(error){
         res.status(409).json({ message: error.message });
     }
 }
