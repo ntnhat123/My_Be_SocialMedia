@@ -48,11 +48,11 @@ export const getUserById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const id = req.params.id;
-  const {fullName,avatar,gender,mobile,address} = req.body;
+  const {fullName,avatar,gender,mobile,address,story} = req.body;
 
   try{
     const user = await User.findByIdAndUpdate({_id: new mongoose.Types.ObjectId(id)},{
-      fullName,avatar,gender,mobile,address},{new: true}
+      fullName,avatar,gender,mobile,address,story},{new: true}
     );
     if(!user){
       return res.status(400).json({
