@@ -10,13 +10,12 @@ export const createComment = async (req, res) => {
         const comment = await newComment.save();
         post.comments.push(comment._id);
         await post.save();
-        const commentUser = await Comment.findById(comment._id).populate("usercreator").populate("likes");
+        const commentUser = await Comment.findById(comment._id).populate("usercreator");
         res.status(200).json({
             message: "Create comment successfully",
             data: commentUser,
             status :true
         })
-
     } catch (error) {
         res.status(409).json({ message: error.message });
     }

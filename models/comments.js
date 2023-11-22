@@ -10,9 +10,9 @@ const commentSchema = new mongoose.Schema({
             createdAt: Date,
         },
     ],
-    comments: [
+    comment: [
         {
-            userId: { type: mongoose.Types.ObjectId, ref: "User" },
+            userId: { type: mongoose.Types.ObjectId, ref: "Comment" },
             text: String,
             createdAt: Date,
         },

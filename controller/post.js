@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 import Post from "../models/post.js";
+import User from "../models/user.js";
 
 export const createPost = async (req, res) => {
     try{
         const { content, images } = req.body;
         const newPost = new Post({ content, images, usercreator: req.userId,createAt:new Date().toISOString() });
         const post = await newPost.save();
-        const postUser = await Post.findById(post._id).populate("usercreator").populate("likes");
+        const postUser = await Post.findById(post._id).populate("usercreator");
         res.status(200).json({
             message: "Create post successfully",
             data: postUser,
@@ -42,7 +43,23 @@ export const updatePost = async (req, res) => {
 
 export const getPost = async (req, res) => {
     try {
-        const post = await Post.find().populate("usercreator").populate("likes").populate("comments");
+        const post = await Post.find()
+        .sort("-createdAt")
+        .populate("usercreator")
+        .populate({
+            path: "comments",
+            populate: {
+            path: "usercreator",
+            },
+        })
+        .populate({
+            path: "comments",
+            populate: {
+              path: "usercreator",
+              model: User,
+            },
+          });
+        console.log(post)
         res.status(200).json({
             message: "Get post successfully",
             data: post,
