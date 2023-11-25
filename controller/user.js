@@ -88,31 +88,66 @@ export const getAllUser = async (req, res) => {
   }
 };
 
+// export const follow = async (req, res) => {
+//   const { _id } = req.body;
+//   try{
+//     const followerUsers = await User.findById(req.userId);
+//     const followingUsers = await User.findById(_id);
+//     console.log(followerUsers.followers.includes);
+//     if(!followerUsers.followers.includes(_id)){
+//       await User.findByIdAndUpdate({$push: {followers: _id}});
+//       await User.findByIdAndUpdate({$push: {following: req.userId}});
+//       res.status(200).json({
+//         status: true,
+//         message: 'Follow successfully'
+//       });
+//     } else {
+//       await User.findByIdAndUpdate({$pull: {followers: _id}});
+//       await User.findByIdAndUpdate({$pull: {following: req.userId}});
+//       res.status(400).json({
+//         status: false,
+//         message: 'Unfollow successfully'
+//       });
+//     }
+//   } catch (err) {
+//     res.status(500).json({
+//       status: false,
+//       message: err.message,
+//     });
+//   }
+// }
+
 export const follow = async (req, res) => {
   const { _id } = req.body;
-  try{
-    const followerUsers = await User.findById(req.userId);
-    const followingUsers = await User.findById(_id);
-    if(!followerUsers.followers.includes(_id)){
-      await followerUsers.updateOne({$push: {followers: _id}});
-      await followingUsers.updateOne({$push: {following: req.userId}});
+  try {
+    const followerUser = await User.findById(req.userId);
+    const followingUser = await User.findById(_id);
+    if (!followerUser.followers.includes(_id)) {
+      await User.findByIdAndUpdate(req.userId, { $push: { followers: _id } });
+      await User.findByIdAndUpdate(_id, { $push: { following: req.userId } });
       res.status(200).json({
         status: true,
-        message: 'Follow successfully'
+        message: 'Follow successfully',
+        data: followerUser
       });
-    } else {
-      res.status(400).json({
-        status: false,
-        message: 'You already follow this user'
+    }else {
+      await User.findByIdAndUpdate(req.userId, { $pull: { followers: _id } });
+      await User.findByIdAndUpdate(_id, { $pull: { following: req.userId } });
+      res.status(200).json({
+        status: true,
+        message: 'Unfollow successfully',
+        data: followingUser
       });
     }
+
   } catch (err) {
     res.status(500).json({
       status: false,
       message: err.message,
     });
   }
-}
+};
+
 
 export const unfollow = async (req, res) => {
   const id = req.params.id;
