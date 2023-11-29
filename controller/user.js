@@ -5,22 +5,18 @@ import mongoose from 'mongoose';
 const test = "test";
 
 export const searchUser = async (req, res) => {
-    const search = req.query.fullName;
+    const { fullName,id } = req.query;
     try{
-        const users = await User.find({fullName: new RegExp(search, 'i')})
-        .find({ _id: { $ne: req.userId } }).limit(10);
-        if (users.length === 0) {
-            res.json({ message: 'Không tìm thấy người dùng nào.' });
-          } else {
-            res.status(200).json(
-                users
-            )
-        }
+      const users = await User.find({fullName: {$regex: fullName, $options: "i"}}).find({_id: {$ne: id}}).limit(5);
+      res.status(200).json({
+        status: true,
+        data: users
+      });
     } catch (err) {
-        res.status(500).json({
-          status: false,
-          message: err.message,
-        });
+      res.status(500).json({
+        status: false,
+        message: err.message,
+      });
     }
 }
 
@@ -87,35 +83,6 @@ export const getAllUser = async (req, res) => {
     });
   }
 };
-
-// export const follow = async (req, res) => {
-//   const { _id } = req.body;
-//   try{
-//     const followerUsers = await User.findById(req.userId);
-//     const followingUsers = await User.findById(_id);
-//     console.log(followerUsers.followers.includes);
-//     if(!followerUsers.followers.includes(_id)){
-//       await User.findByIdAndUpdate({$push: {followers: _id}});
-//       await User.findByIdAndUpdate({$push: {following: req.userId}});
-//       res.status(200).json({
-//         status: true,
-//         message: 'Follow successfully'
-//       });
-//     } else {
-//       await User.findByIdAndUpdate({$pull: {followers: _id}});
-//       await User.findByIdAndUpdate({$pull: {following: req.userId}});
-//       res.status(400).json({
-//         status: false,
-//         message: 'Unfollow successfully'
-//       });
-//     }
-//   } catch (err) {
-//     res.status(500).json({
-//       status: false,
-//       message: err.message,
-//     });
-//   }
-// }
 
 export const follow = async (req, res) => {
   const { _id } = req.body;

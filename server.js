@@ -32,3 +32,4 @@ app.listen(
     // socket();
 });
 
+app.use(express.json());

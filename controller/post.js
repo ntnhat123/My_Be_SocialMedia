@@ -23,11 +23,12 @@ export const updatePost = async (req, res) => {
     const { id, content, images } = req.body;
     try{
         if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
-        const post = await Post.findById(id).populate("usercreator").populate("likes");
+        const post = await Post.findById(id).populate("usercreator");
         if (post.usercreator._id == req.userId) {
             await Post.findByIdAndUpdate(id, { content, images });
             res.status(200).json({
                 message: "Update post successfully",
+                // data: post,
                 status :true
             })
         } else {
@@ -73,7 +74,22 @@ export const getPost = async (req, res) => {
 export const getPostOfUserId = async (req, res) => {
     const { id } = req.params;
     try {
-        const post = await Post.find({ usercreator: id }).populate("usercreator").populate("likes").populate("comments");
+        const post = await Post.find({ usercreator: id })
+        .sort("-createdAt")
+        .populate("usercreator")
+        .populate({
+            path: "comments",
+            populate: {
+            path: "usercreator",
+            },
+        })
+        .populate({
+            path: "comments",
+            populate: {
+              path: "usercreator",
+              model: User,
+            },
+        });
         res.status(200).json({
             message: "Get post successfully",
             data: post,
