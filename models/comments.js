@@ -10,6 +10,7 @@ const commentSchema = new mongoose.Schema({
             createdAt: Date,
         },
     ],
+    reply:[{ type: mongoose.Types.ObjectId, ref: "Comment" }],
     comment: [{ type: mongoose.Types.ObjectId, ref: "Comment" }],
     usercreator: { type: mongoose.Types.ObjectId, ref: "User" },
     tag:{Object},

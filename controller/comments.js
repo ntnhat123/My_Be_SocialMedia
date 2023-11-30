@@ -75,13 +75,19 @@ export const deleteComment = async (req,res) =>{
 }
 
 export const updateComment = async (req,res) =>{
-    const { id } = req.params;
-    const { content } = req.body;
+    const { id, content } = req.body;
     try{
+        
         const comment = await Comment.findById(id);
         if (!comment) {
             return res.status(404).json({
                 message: "Comment not found",
+                status: false
+            });
+        }
+        if(comment.usercreator != req.userId){
+            return res.status(403).json({
+                message: "You can update only your comment",
                 status: false
             });
         }
@@ -90,6 +96,28 @@ export const updateComment = async (req,res) =>{
         res.status(200).json({
             message: "Update comment successfully",
             status: true
+        });
+    }catch(error){
+        res.status(409).json({ message: error.message });
+    }
+}
+
+export const replyComment = async (req,res) =>{
+    const { content, commentId, postId } = req.body;
+    try{
+        Comment.findById(commentId).then(async (comment) => {
+            const newComment = new Comment({ content, usercreator: req.userId, postID: postId, commentID: commentId });
+            const reply = await newComment.save();
+            comment.reply.push(reply._id);
+            await comment.save();
+            const commentUser = await Comment.findById(reply._id).populate("usercreator");
+            res.status(200).json({
+                message: "Reply comment successfully",
+                data: commentUser,
+                status: true
+            });
+        }).catch((error) => {
+            res.status(409).json({ message: error.message });
         });
     }catch(error){
         res.status(409).json({ message: error.message });
