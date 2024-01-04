@@ -130,12 +130,14 @@ export const likePost = async (req, res) => {
             await post.updateOne({ $push: { likes: req.userId } });
             res.status(200).json({
                 message: "Like post successfully",
+                data: post,
                 status :true
             })
         } else {
             await post.updateOne({ $pull: { likes: req.userId } });
             res.status(200).json({
                 message: "Unlike post successfully",
+                data: post,
                 status :true
             })
         }

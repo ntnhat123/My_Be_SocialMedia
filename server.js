@@ -32,4 +32,8 @@ app.listen(
     // socket();
 });
 
+app.use("/",(req , res) => {
+    res.send("Hello World");
+})  
+
 app.use(express.json());
