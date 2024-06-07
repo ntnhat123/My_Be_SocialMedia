@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 const secretKey = 'test'; 
 export const register = async (req, res) => {
-    const { fullName, email, password,gender } = req.body;
+    const { fullName, email, password, gender } = req.body;
     try{
         const users = await User.findOne({email});
         if(users){
@@ -99,7 +99,6 @@ export const loginToken = async (req, res) => {
     try {
         const decoded = jwt.verify(token, secretKey);
         const user = await User.findById(decoded.id);
-        console.log(user)
         if (!user) {
             return res.status(400).json({
                 status: false,

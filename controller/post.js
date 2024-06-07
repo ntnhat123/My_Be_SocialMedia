@@ -60,7 +60,6 @@ export const getPost = async (req, res) => {
               model: User,
             },
           });
-        console.log(post)
         res.status(200).json({
             message: "Get post successfully",
             data: post,
@@ -189,7 +188,6 @@ export const getUserlikepost = async (req, res) => {
 export const getLikePost = async (req, res) => {
     try {
         const posts = await Post.find().populate("usercreator").populate("likes");
-        console.log(posts)
         if (!posts || !Array.isArray(posts)) {
             throw new Error("No posts found or posts are not in the expected format");
         }

@@ -8,7 +8,6 @@ export const createComment = async (req, res) => {
     const newComment = new Comment({ content, usercreator: req.userId, postID: postId });
     try {
         const comment = await newComment.save();
-        console.log(comment)
         post.comments.push(comment._id);
         await post.save();
         const commentUser = await Comment.findById(comment._id).populate("usercreator");

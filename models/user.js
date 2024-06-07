@@ -36,6 +36,14 @@ const userSchema = new mongoose.Schema({
     followers: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     following: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     saved: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+    isAppear: {
+        type: Boolean,
+        default: false,
+    },
+    isDisappear: {
+        type: Boolean,
+        default: false,
+    },
     },
     {
       timestamps: true,
